@@ -9,8 +9,9 @@ Building **Memoir** taught us invaluable lessons about **machine learning, user 
 ## How We Built It  
 - **Frontend:** Developed using **React Native** for a smooth cross-platform experience.  
 - **Backend:** Powered by **Firebase** for real-time data storage and authentication.  
-- **AI Integration:** Implemented **Face Recognition (OpenCV & AWS Rekognition)** to identify people in images/videos.  
-- **Audio Analysis:** Used **speech-to-text APIs** to capture conversations and add context to memories.  
+- **AI Integration:** Implemented **Face Recognition (Facenet512)** to identify people in images/videos.  
+- **Audio Analysis:** Used **speech-to-text models (Chirp2)** to capture conversations and add context to memories.  
+- **Summarization:** Finally, used Gemini's latest 2.0 flash model to summarize the long conversations into understandable summaries.
 - **Memory Sorting:** Designed a **relationship-based profile system** to categorize moments based on people and events.  
 
 ## Challenges We Faced  
@@ -19,6 +20,6 @@ Building **Memoir** taught us invaluable lessons about **machine learning, user 
 - **User Experience:** Making the app intuitive for both tech-savvy users and those who may struggle with cognitive decline.  
 
 ## The Future of Memoir  
-Our journey with **Memoir** is just beginning. We aim to integrate **voice-activated memory recall**, **AR storytelling**, and **collaborative memory-sharing** features. Our vision is to make Memoir a digital companion that not only stores moments but also tells the stories that matter.  
+Our journey with **Memoir** is just beginning. We aim to integrate **voice-activated memory recall**, **AR storytelling**, and **collaborative memory-sharing** features. Our vision is to make Memoir a digital companion that not only stores moments but also tells the stories that matter.  We hope to do this  via a integration of meta glasses allowing for real time data to be transmated.
 
 **Because memories shouldn’t just be stored—they should be remembered.**  
