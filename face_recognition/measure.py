@@ -30,39 +30,18 @@ def retrieval(emb_q:list|np.ndarray, img_embs :list|np.ndarray):
     index = faiss.IndexFlatL2(img_embs.shape[1])
     index.add(img_embs)
     D, I = index.search(emb_q[np.newaxis, ...], 1)
-    nearest_distance = D.flatten()[0]
-    threshold = verification.find_threshold(model_name=MODEL_NAME, distance_metric="euclidean_l2")
+    nearest_distance = np.sqrt(D.flatten()[0])
+    # diff = img_embs - emb_q  # (N, 512)
+    # distance_vector = np.square(diff)  # (N, 512)
+    # distance_sum = np.sqrt(np.sum(distance_vector, axis=1))  # (N,) 각 유저별 거리
+    # nearest_idx = np.argmin(distance_sum)
+    # nearest_distance = distance_sum[nearest_idx]
+    threshold = verification.find_threshold(model_name=MODEL_NAME, distance_metric="euclidean")
     is_same = nearest_distance < threshold 
     logger.info("persion exist") if is_same else logger.info("diff person")
-    
-    return is_same, I.flatten()[0]
+    logger.info(f"{nearest_distance, threshold}")
+    return is_same,I.flatten()[0]  #nearest_idx #I.flatten()[0]
 
-# NOTE test code
-def measure_sim(emb1, emb2, vervose=False):
-    # emb1, face1 = get_emb(emb1, MODEL_NAME)
-    # emb2, face2 = get_emb(emb2, MODEL_NAME)
-    # ----------------------------------------------
-    # distance between two images - euclidean distance formula
-    distance_vector = np.square(emb1-emb2)
-    current_distance = np.sqrt(distance_vector.sum())
-    logger.info(f"Euclidean distance: {current_distance}") if vervose else None
-
-    threshold = verification.find_threshold(model_name=MODEL_NAME, distance_metric="euclidean")
-    logger.info(f"Threshold for {MODEL_NAME}-euclidean pair is {threshold}") if vervose else None
-    is_same = current_distance < threshold 
-    if vervose:
-        if is_same:
-            logger.info(
-                f"This pair is same person because its distance {current_distance}"
-                f" is less than threshold {threshold}"
-            )
-        else:
-            logger.info(
-                f"This pair is different persons because its distance {current_distance}"
-                f" is greater than threshold {threshold}"
-            )
-
-    return is_same, current_distance
 
 def get_emb(img:str|np.ndarray):
     model = MODEL
@@ -73,13 +52,3 @@ def get_emb(img:str|np.ndarray):
     img_representation = np.array(model.forward(img))
 
     return img_representation, img
-
-# NOTE test code
-if __name__ == '__main__':
-    img1_path = "dataset/jiwon.jpg"
-    img2_path = "dataset/jiwon2.jpg"
-    is_same, distance,faces = measure_sim(img1_path, img2_path, vervose=True)
-    #print(faces[0].shape)
-    for i, face in enumerate(faces):
-        print(is_same)
-        cv2.imwrite(f"dataset/jiwon_face_{i}.jpg", (face[0]*255).astype(np.uint8))

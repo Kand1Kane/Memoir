@@ -4,8 +4,7 @@ from flask_cors import CORS
 import numpy as np
 import cv2
 import base64
-import tempfile
-from measure import measure_sim , get_emb, retrieval
+from measure import retrieval
 from firebase_ops import *
 
 app = Flask(__name__)
@@ -47,7 +46,7 @@ def get_all_face_info():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# NOTE most important api in this module
+# NOTE main retrival logic
 @app.route("/is_sim", methods=["POST"]) # need current input's embedding
 def is_sim():
     """
@@ -91,53 +90,12 @@ def is_sim0(emb):
     all_name = [user["name"] for user in all_users]
     assert len(all_embs) == len(all_name), "Length of embs and names are not same"
     is_same, nearest_idx = retrieval(emb, all_embs)
-    
+    user = None
     if is_same:
         retrived_name = all_name[nearest_idx]
         user = get_user(retrived_name)
         
     return is_same, user
 
-# NOTE test code
-@app.route("/verify_two", methods=["POST"])
-def verify_two():
-    try:
-        if 'img1' not in request.files or 'img2' not in request.files:
-            return jsonify({"error": "Both img1 and img2 must be provided"}), 400
-
-        img1_file = request.files['img1']
-        img2_file = request.files['img2']
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp1, \
-             tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp2:
-            img1_path = tmp1.name
-            img2_path = tmp2.name
-            img1_file.save(img1_path)
-            img2_file.save(img2_path)
-
-        is_same, distance, (face1, face2) = measure_sim(img1_path, img2_path, vervose=True)
-
-        # face encoding to base64
-        face1_encoded = encode_image(face1)
-        face2_encoded = encode_image(face2)
-
-        return jsonify({
-            "is_same": bool(is_same),
-            "distance": distance,
-            "img1": face1_encoded,
-            "img2": face2_encoded
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 if __name__ == "__main__":
-    # user = get_user('jiwon')
-    # emb = user['embedding']
-    # is_same, user = is_sim0(emb)
-    # image_data = base64.b64decode(user['image'])
-
-    # nparr = np.frombuffer(image_data, np.uint8)
-    # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    app.run(debug=True) 
+    app.run(debug=True)
