@@ -27,7 +27,7 @@ const memoryData: memoryType[] = [
     count: 50,
     // 8 days ago (should show up in This Month)
     created_at: new Date(new Date().getTime() - 8 * 24 * 60 * 60 * 1000),
-    image_url: {uri: "https://reactnative.dev/img/tiny_logo.png"},
+    image_url: {uri: "./outdoor-boys.jpg"},
   },
   {
     id: 2,

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { HomePage } from './HomePage';
 import { CameraPage } from './CameraPage';
+import { ProfilePage } from './ProfilePage';
 
 export const ScreenSelector = () => {
 
@@ -28,7 +29,7 @@ export const ScreenSelector = () => {
       )}
       {activeTab === 'profile' && (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-xl font-bold">Profile Screen</Text>
+          <ProfilePage />
         </View>
       )}
 
