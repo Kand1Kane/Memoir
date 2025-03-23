@@ -25,11 +25,7 @@ def get_user_face_info():
         user = get_user(name)
         
         if user:
-            return jsonify({
-                "name": user["name"],
-                "embedding": user["embedding"] if user["embedding"] else None,
-                "image": user["image"]
-            })
+            return jsonify(user)
             
         else:
             return jsonify({"error": f"User '{name}' not found."}), 404
@@ -74,7 +70,7 @@ def is_sim():
             })
             
         else:
-            create_user(name=name, embedding=emb, image_base64=face_encoded)
+            create_user(uid=name, embedding=emb, image_base64=face_encoded)
             return jsonify({
                 "is_same": bool(is_same),
                 "user": None
@@ -87,12 +83,13 @@ def is_sim():
 def is_sim0(emb):
     all_users = get_all_users()
     all_embs = [user["embedding"] for user in all_users]
-    all_name = [user["name"] for user in all_users]
-    assert len(all_embs) == len(all_name), "Length of embs and names are not same"
+    all_uid = [user["uid"] for user in all_users]
+    
+    assert len(all_embs) == len(all_uid), "Length of embs and names are not same"
     is_same, nearest_idx = retrieval(emb, all_embs)
     user = None
     if is_same:
-        retrived_name = all_name[nearest_idx]
+        retrived_name = all_uid[nearest_idx]
         user = get_user(retrived_name)
         
     return is_same, user

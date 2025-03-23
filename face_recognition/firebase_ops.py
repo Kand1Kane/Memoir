@@ -5,6 +5,8 @@ import cv2
 from pprint import pprint
 import os
 import sys
+import uuid
+
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "..")) 
 
@@ -15,12 +17,13 @@ if CURRENT_DIR not in sys.path:
     
 JSON = os.path.join(CURRENT_DIR, "genai-ml-test-firebase-adminsdk-fbsvc-7cfb209fe3.json")
 
-def create_user(uid: str, embedding: np.ndarray, image_base64: str):
+def create_user(embedding: np.ndarray, image_base64: str):
     """
     - name: user name
     - embedding: face embedding from Deepface (list of float)
     - image_base64: image array
     """
+    uid = str(uuid.uuid4())
     db = get_db(JSON)
     doc_ref = db.collection("user_info").document(uid)
     doc_ref.set({
@@ -70,15 +73,19 @@ def get_all_users():
         name = data.get("name")
         embedding = data.get("embedding")
         image = data.get("image")
-
+        summary = data.get("summary") 
+        when = data.get("when")
+        relationship = data.get("relationship")
+        uid = data.get("uid")
+        
         user_list.append({
-            "uid": doc.id if doc.id else None,
+            "uid": uid,
             "name": name if isinstance(name, str) and len(name)>0 else None,
             "embedding": embedding if isinstance(embedding, list) else None,
             "image": image if isinstance(image, str) else None,
-            "relationship": None,
-            "when": None,
-            "summary": None
+            "relationship": relationship if isinstance(relationship, str) else None,
+            "when": when if isinstance(when, str) else None,
+            "summary": summary if isinstance(embedding, list) else None
             })
 
     return user_list
