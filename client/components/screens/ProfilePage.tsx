@@ -17,10 +17,12 @@ export const ProfilePage = () =>  {
       {/* Header with profile info */}
       <View style={styles.header}>
         <View style={styles.profileContainer}>
-          <Image 
-            source={{ uri: './jessica.jpg' }} 
-            style={styles.profileImage} 
-          />
+        <Image 
+            source={require('../../assets/jessica.jpg')}
+            style={styles.profileImage}
+            onError={(error) => console.error('Image error:', error.nativeEvent.error)}
+            onLoad={() => console.log('Image loaded successfully')}
+            /> 
           <Text style={styles.email}>jessicabailey0121@gmail.com</Text>
           <Text style={styles.name}>Jessica Bailey</Text>
         </View>

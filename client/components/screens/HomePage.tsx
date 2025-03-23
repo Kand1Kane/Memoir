@@ -1,12 +1,33 @@
+"use client"
+
+import { useState } from "react"
 import HomeMemories from "components/HomeMemories"
 import TopHomeHeader from "components/TopHomeHeader"
-import { View } from "react-native"
 
 export const HomePage = () => {
-    return (
-        <>
-            <TopHomeHeader />
-            <HomeMemories/>
-        </>
-    )
+  // Lift state up to the parent component
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedLocations, setSelectedLocations] = useState<number[]>([])
+
+  // Handle search query changes
+  const handleSearch = (query: string) => {
+    setSearchQuery(query)
+  }
+
+  // Handle location selection changes
+  const handleLocationChange = (locations: number[]) => {
+    setSelectedLocations(locations)
+  }
+
+  return (
+    <>
+      <TopHomeHeader
+        onSearch={handleSearch}
+        selectedLocations={selectedLocations}
+        onLocationChange={handleLocationChange}
+      />
+      <HomeMemories searchQuery={searchQuery} selectedLocations={selectedLocations} />
+    </>
+  )
 }
+
