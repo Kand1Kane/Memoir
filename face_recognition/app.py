@@ -50,12 +50,16 @@ def get_all_face_info():
 # NOTE most important api in this module
 @app.route("/is_sim", methods=["POST"]) # need current input's embedding
 def is_sim():
+    """
+    expected request : encoded image, name_field
+    """
     try:
         if 'embedding' not in request.files or 'name' not in request.form:
             return jsonify({"error": "Both img and name must be provided"}), 400
         data = request.get_json()
         emb = data['embedding']
         name = data['name']
+        face_encoded = data['image']
         all_users = get_all_users()
         all_embs = [user["embedding"] for user in all_users]
         all_name = [user["name"] for user in all_users]
@@ -64,29 +68,35 @@ def is_sim():
         
         # get retrived user
         if is_same:
-            retrived_name = all_name[nearest_idx]
-            user = get_user(retrived_name) # TODO name 한번 더 체크 확인
-            
+            retrived_user = all_users[nearest_idx]
             return jsonify({
                 "is_same": bool(is_same),
-                # "img": face1_encoded,
-                # "user_img": face2_encoded
+                "user": retrived_user['name']
             })
             
         else:
-            user = None
-        # face encoding to base64
-        # face1_encoded = encode_image(face1)
-        # face2_encoded = encode_image(face2)
+            create_user(name=name, embedding=emb, image_base64=face_encoded)
             return jsonify({
                 "is_same": bool(is_same),
-                # "distance": distance,
-                # "img": face1_encoded,
-                # "user_img": face2_encoded
+                "user": None
             })
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# test code
+def is_sim0(emb):
+    all_users = get_all_users()
+    all_embs = [user["embedding"] for user in all_users]
+    all_name = [user["name"] for user in all_users]
+    assert len(all_embs) == len(all_name), "Length of embs and names are not same"
+    is_same, nearest_idx = retrieval(emb, all_embs)
+    
+    if is_same:
+        retrived_name = all_name[nearest_idx]
+        user = get_user(retrived_name)
+        
+    return is_same, user
 
 # NOTE test code
 @app.route("/verify_two", methods=["POST"])
@@ -123,4 +133,11 @@ def verify_two():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # user = get_user('jiwon')
+    # emb = user['embedding']
+    # is_same, user = is_sim0(emb)
+    # image_data = base64.b64decode(user['image'])
+
+    # nparr = np.frombuffer(image_data, np.uint8)
+    # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    app.run(debug=True) 

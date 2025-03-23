@@ -1,4 +1,17 @@
 from firebase_ops import *
+from measure import *
+
+def encode_image(image: np.ndarray) -> str:
+    image = (image[0] * 255).astype(np.uint8)  # (1, H, W, C) -> (H, W, C)
+    _, buffer = cv2.imencode('.jpg', image)
+    return base64.b64encode(buffer).decode('utf-8')
+
+def write_sample(field, img_path):
+    img = cv2.imread(img_path)
+    emb, _ = get_emb(img)
+    emb = emb.tolist()
+    image_base64 = encode_image(img)
+    create_user(name=field, embedding=emb, image_base64=image_base64)
 
 def test_write_user():
     embedding = np.random.rand(512).astype(np.float32)
@@ -27,5 +40,11 @@ def test_update_user():
     update_user(user_id, updates)
 
 if __name__ =="__main__":
-    result = test_get_user()
-    print(result['name'])
+    from glob import glob
+    img_paths = glob("dataset/*.jpg")
+    for img_path in img_paths:
+        field = img_path.split("/")[-1].split(".")[0]
+        write_sample(field, img_path)
+        
+    # result = test_get_user()
+    # print(result['name'])

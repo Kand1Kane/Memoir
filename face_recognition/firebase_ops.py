@@ -91,7 +91,7 @@ def update_user(user_id: str, updates: dict):
         print(f"[!] 업데이트 실패: {e}")
 
 if __name__ == "__main__":
-    target_name = "test_user"
+    target_name = "jiwon"
     user_data = get_user(target_name)
 
     if user_data:
@@ -103,3 +103,4 @@ if __name__ == "__main__":
         })
     else:
         print(f"[-] 사용자 '{target_name}' 를 찾을 수 없습니다.")
+    
