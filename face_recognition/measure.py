@@ -37,7 +37,7 @@ def retrieval(emb_q:list|np.ndarray, img_embs :list|np.ndarray):
     # nearest_idx = np.argmin(distance_sum)
     # nearest_distance = distance_sum[nearest_idx]
     threshold = verification.find_threshold(model_name=MODEL_NAME, distance_metric="euclidean")
-    is_same = nearest_distance < threshold 
+    is_same = nearest_distance < threshold - 3
     logger.info("persion exist") if is_same else logger.info("diff person")
     logger.info(f"{nearest_distance, threshold}")
     return is_same,I.flatten()[0]  #nearest_idx #I.flatten()[0]

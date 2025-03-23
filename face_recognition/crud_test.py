@@ -45,7 +45,7 @@ if __name__ =="__main__":
     # img_paths = glob("dataset/*.jpg")
     # for img_path in img_paths:
     #     field = img_path.split("/")[-1].split(".")[0]
-    img_path = "/home/prj/Memoir/face_recognition/dataset/03.36048607.1.jpg"
+    img_path = "/home/prj/Memoir/face_recognition/dataset/images_1.jpg"
     entity = write_sample(field=None, img_path=img_path)
     is_same, user = is_sim0(entity['embedding'])
     print(is_same)
