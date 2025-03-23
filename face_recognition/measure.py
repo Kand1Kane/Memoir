@@ -46,9 +46,13 @@ def retrieval(emb_q:list|np.ndarray, img_embs :list|np.ndarray):
 def get_emb(img:str|np.ndarray):
     model = MODEL
     target_size = model.input_shape
-    img = DeepFace.extract_faces(img_path=img)[0]["face"]
-    img = cv2.resize(img, target_size)
-    img = np.expand_dims(img, axis=0)  # to (1, 224, 224, 3)
-    img_representation = np.array(model.forward(img))
+    try:
+        img = DeepFace.extract_faces(img_path=img)[0]["face"]
+        img = cv2.resize(img, target_size)
+        img = np.expand_dims(img, axis=0)  # to (1, 224, 224, 3)
+        img_representation = np.array(model.forward(img))
 
-    return img_representation, img
+        return img_representation, img
+    except:
+        print("no face detected")
+        return None, None

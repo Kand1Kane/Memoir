@@ -4,14 +4,14 @@ from flask_cors import CORS
 import numpy as np
 import cv2
 import base64
-from measure import retrieval
+from measure import retrieval, get_emb
 from firebase_ops import *
 
 app = Flask(__name__)
 CORS(app)
 
 def encode_image(image: np.ndarray) -> str:
-    image = (image[0] * 255).astype(np.uint8)  # (1, H, W, C) -> (H, W, C)
+    image = (image).astype(np.uint8)  # (1, H, W, C) -> (H, W, C)
     _, buffer = cv2.imencode('.jpg', image)
     return base64.b64encode(buffer).decode('utf-8')
 
@@ -46,15 +46,14 @@ def get_all_face_info():
 @app.route("/is_sim", methods=["POST"]) # need current input's embedding
 def is_sim():
     """
-    expected request : encoded image, name_field
+    expected request : encoded image
     """
     try:
         if 'embedding' not in request.files or 'name' not in request.form:
             return jsonify({"error": "Both img and name must be provided"}), 400
         data = request.get_json()
-        emb = data['embedding']
-        name = data['name']
-        face_encoded = data['image']
+        img_encoded = data['image']
+        emb = get_emb(encode_image(img_encoded))
         all_users = get_all_users()
         all_embs = [user["embedding"] for user in all_users]
         all_name = [user["name"] for user in all_users]
@@ -66,11 +65,11 @@ def is_sim():
             retrived_user = all_users[nearest_idx]
             return jsonify({
                 "is_same": bool(is_same),
-                "user": retrived_user['name']
+                "user": retrived_user['uid']
             })
             
         else:
-            create_user(uid=name, embedding=emb, image_base64=face_encoded)
+            create_user(embedding=emb, image_base64=img_encoded)
             return jsonify({
                 "is_same": bool(is_same),
                 "user": None
