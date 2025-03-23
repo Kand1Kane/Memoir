@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { HomePage } from './HomePage';
 import { CameraPage } from './CameraPage';
 import { ProfilePage } from './ProfilePage';
+import { MemoryPage } from './MemoryPage';
 
 export const ScreenSelector = () => {
 
@@ -24,7 +25,7 @@ export const ScreenSelector = () => {
       )}
       {activeTab === 'memories' && (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-xl font-bold">Memories Screen</Text>
+          <MemoryPage />
         </View>
       )}
       {activeTab === 'profile' && (
