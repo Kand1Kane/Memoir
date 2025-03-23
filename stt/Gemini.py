@@ -1,6 +1,6 @@
 import google.generativeai as genai
-
-API_KEY = "AIzaSyAyz1qqlgKQhujbxtxOG11HBmT5F6enCEg"
+from glob import glob
+API_KEY = glob("secret/*")[0]
 genai.configure(api_key=API_KEY)
 # The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
 

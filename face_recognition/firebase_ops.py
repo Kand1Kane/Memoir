@@ -15,28 +15,32 @@ if CURRENT_DIR not in sys.path:
     
 JSON = os.path.join(CURRENT_DIR, "genai-ml-test-firebase-adminsdk-fbsvc-7cfb209fe3.json")
 
-def create_user(name: str, embedding: np.ndarray, image_base64: str):
+def create_user(uid: str, embedding: np.ndarray, image_base64: str):
     """
     - name: user name
     - embedding: face embedding from Deepface (list of float)
     - image_base64: image array
     """
     db = get_db(JSON)
-    doc_ref = db.collection("user_info").document(name)
+    doc_ref = db.collection("user_info").document(uid)
     doc_ref.set({
-        "name": name,
+        "uid": uid,
+        "name": None,
         "embedding": embedding,
-        "image": image_base64
+        "image": image_base64,
+        "relationship": None,
+        "when": None,
+        "summary": None
     })
-    print(f"[+] Saved user '{name}' to Firestore.")
+    print(f"[+] Saved user '{uid}' to Firestore.")
     
     
-def get_user(name: str)->dict: 
+def get_user(uid: str)->dict: 
     """
     - name: entity name
     """
     db = get_db(JSON)
-    doc_ref = db.collection("user_info").document(name)
+    doc_ref = db.collection("user_info").document(uid)
     doc = doc_ref.get()
     if doc.exists:
         data = doc.to_dict()
@@ -44,14 +48,14 @@ def get_user(name: str)->dict:
     else:
         return None
     
-def delete_user(name: str):
+def delete_user(uid: str):
     """
     - name: entity name
     """
     db = get_db(JSON)
-    doc_ref = db.collection("user_info").document(name)
+    doc_ref = db.collection("user_info").document(uid)
     doc_ref.delete()
-    print(f"[+] Deleted user id'{name}' from Firestore.")
+    print(f"[+] Deleted user id'{uid}' from Firestore.")
 
 def get_all_users():
     db = get_db(JSON)
@@ -68,11 +72,14 @@ def get_all_users():
         image = data.get("image")
 
         user_list.append({
-            "user_id": doc.id if doc.id else None,
+            "uid": doc.id if doc.id else None,
             "name": name if isinstance(name, str) and len(name)>0 else None,
             "embedding": embedding if isinstance(embedding, list) else None,
-            "image": image if isinstance(image, str) else None
-        })
+            "image": image if isinstance(image, str) else None,
+            "relationship": None,
+            "when": None,
+            "summary": None
+            })
 
     return user_list
 
