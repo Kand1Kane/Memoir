@@ -18,30 +18,28 @@ MODEL_NAME = "Facenet512"
 # TODO we have to load on server once and do not load it again !!
 MODEL: FacialRecognition = DeepFace.build_model(task="facial_recognition", model_name=MODEL_NAME)
 
-def retrieval(model, img:np.array, img_embs :np.array):
+def retrieval(emb_q:list|np.ndarray, img_embs :list|np.ndarray):
     """
     img = given image
     img_faces = all faces emb in db
     """
-    emb_q = get_emb(model, img)
     index = faiss.IndexFlatL2(img_embs.shape[1])
     index.add(img_embs)
     D, I = index.search(emb_q, 1)
-    nearest_face = img_embs[I.flatten()[0]]
     nearest_distance = D.flatten()[0]
     threshold = verification.find_threshold(model_name=MODEL_NAME, distance_metric="euclidean_l2")
     is_same = nearest_distance < threshold 
     logger.info("different persion") if is_same else logger.info("same person")
     
-    return is_same, nearest_face
+    return is_same, I.flatten()[0]
 
-    
-def measure_sim(img1_path:str, img2_path:str, vervose=False):
-    img1_representation, face1 = get_emb(img1_path, MODEL_NAME)
-    img2_representation, face2 = get_emb(img2_path, MODEL_NAME)
+# NOTE test code
+def measure_sim(emb1, emb2, vervose=False):
+    # img1_representation, face1 = get_emb(img1_path, MODEL_NAME)
+    # img2_representation, face2 = get_emb(img2_path, MODEL_NAME)
     # ----------------------------------------------
     # distance between two images - euclidean distance formula
-    distance_vector = np.square(img1_representation - img2_representation)
+    distance_vector = np.square(emb1-emb2)
     current_distance = np.sqrt(distance_vector.sum())
     logger.info(f"Euclidean distance: {current_distance}") if vervose else None
 
@@ -60,9 +58,10 @@ def measure_sim(img1_path:str, img2_path:str, vervose=False):
                 f" is greater than threshold {threshold}"
             )
 
-    return is_same, current_distance, (face1, face2)
+    return is_same, current_distance
 
-def get_emb(model, img:str|np.array):
+def get_emb(img:str|np.ndarray):
+    model = MODEL
     target_size = model.input_shape
     img = DeepFace.extract_faces(img_path=img)[0]["face"]
     img = cv2.resize(img, target_size)

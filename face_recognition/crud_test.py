@@ -1,6 +1,6 @@
 from firebase_ops import *
 
-def test_save_user():
+def test_write_user():
     embedding = np.random.rand(512).astype(np.float32)
 
     dummy_face = np.zeros((224, 224, 3), dtype=np.uint8)
@@ -9,7 +9,7 @@ def test_save_user():
     _, buffer = cv2.imencode('.jpg', dummy_face)
     image_base64 = base64.b64encode(buffer).decode('utf-8')
     
-    result = save_user(name="test_user2", embedding=embedding.tolist(), image_base64=image_base64)
+    result = create_user(name="test_user2", embedding=embedding.tolist(), image_base64=image_base64)
     return result
 
 def test_get_user():
@@ -27,5 +27,5 @@ def test_update_user():
     update_user(user_id, updates)
 
 if __name__ =="__main__":
-    result = test_update_user()
-    #print(result[2]['embedding'].shape)
+    result = test_get_user()
+    print(result['name'])
