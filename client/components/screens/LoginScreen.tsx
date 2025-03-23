@@ -27,8 +27,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   return (
     <View style={{ padding: 20 }}>
       <Text>Login</Text>
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
+      <TextInput className="p-4"
+      placeholder="Email" value={email} onChangeText={setEmail} />
       <TextInput
+        className="p-4"
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
